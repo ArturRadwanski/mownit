@@ -1,6 +1,6 @@
 #include <iostream>
 #include <iomanip>
-#include "Clock.cpp"
+#include "../Clock.cpp"
 
 using namespace std;
 

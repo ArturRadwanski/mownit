@@ -1,15 +1,15 @@
 #include <iostream>
 #include <iomanip>
-#include "Clock.cpp"
+#include "../Clock.cpp"
 
 using namespace std;
-void heapsort(float* arr, int n);
-void heapify(float* arr, int n, int i);
+void heapsort(long double* arr, int n);
+void heapify(long double* arr, int n, int i);
 
 int sorted() {
     // Ustawienie wypisywania pełnej precyzji
     cout << fixed << setprecision(10);
-    float* valuesToSum = new float[1000001];
+    long double* valuesToSum = new long double[1000001];
      for (int i=1;i<1000001;i++) {
          valuesToSum[i] = 1e-6f;
      }
@@ -19,17 +19,17 @@ int sorted() {
     const Timer t;
     heapsort(valuesToSum, 1000000);
 
-    volatile float sum_ordered = 0;
+    volatile long double sum_ordered = 0;
     for (int i=0;i<1000001;i++) {
         sum_ordered += valuesToSum[i];
     }
-    const double time_sorted = t.elapsed();
+    const long double time_sorted = t.elapsed();
     cout << "Suma (sortowanie):" << sum_ordered << endl << "Czas (z sortowaniem):" << time_sorted << endl;
     delete [] valuesToSum;
     return 0;
 }
 
-void heapify(float* arr, int n, int i)
+void heapify(long double* arr, int n, int i)
 {
     int largest = i; // Initialize largest as root Since we are using 0 based indexing
     int l = 2 * i + 1; // left = 2*i + 1
@@ -53,7 +53,7 @@ void heapify(float* arr, int n, int i)
 }
 
 // main function to do heap sort
-void heapsort(float* arr, int n)
+void heapsort(long double* arr, int n)
 {
     // Build heap (rearrange array)
     for (int i = n / 2 - 1; i >= 0; i--)
