@@ -11,19 +11,21 @@ int sorted() {
     cout << fixed << setprecision(10);
     float* valuesToSum = new float[1000001];
      for (int i=1;i<1000001;i++) {
-         valuesToSum[i] = 1e-6;
+         valuesToSum[i] = 1e-6f;
      }
     valuesToSum[0] = 1;
-    const Timer t;
-    heapsort(valuesToSum, 1000001);
 
-    float sum_ordered = 0;
+
+    const Timer t;
+    heapsort(valuesToSum, 1000000);
+
+    volatile float sum_ordered = 0;
     for (int i=0;i<1000001;i++) {
         sum_ordered += valuesToSum[i];
     }
     const double time_sorted = t.elapsed();
     cout << "Suma (sortowanie):" << sum_ordered << endl << "Czas (z sortowaniem):" << time_sorted << endl;
-    free(valuesToSum);
+    delete [] valuesToSum;
     return 0;
 }
 

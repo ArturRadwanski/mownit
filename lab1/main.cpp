@@ -8,9 +8,10 @@
 using namespace std;
 
 int main() {
+    sorted();
     naive();
     khan();
-    sorted();
+
 
     return 0;
 }

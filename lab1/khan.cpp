@@ -25,7 +25,7 @@ int khan() {
     }
     double time_sorted = t.elapsed();
     cout << "Suma khan:" << sum << endl << "Czas:" << time_sorted << endl;
-    free(valuesToSum);
+    delete [] valuesToSum;
     return 0;
 }
 
