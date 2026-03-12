@@ -1,6 +1,8 @@
 //
 // Created by valleron on 6.03.2026.
 //
+#pragma once
+
 #include <chrono>
 
 class Timer
