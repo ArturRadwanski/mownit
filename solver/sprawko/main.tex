@@ -1,0 +1,82 @@
+\documentclass[twoside]{article}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[polish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[
+    a4paper,
+    inner=2.5cm,   
+    outer=2.5cm,   
+    top=2.5cm,     
+    bottom=2.5cm,  
+    footskip=1cm,  
+    headheight=15pt 
+]{geometry}
+\usepackage{float}
+
+
+
+
+\definecolor{mojkolor}{RGB}{45, 45, 100}
+
+\pagestyle{fancy}
+\fancyhf{} % Wyczyszczenie domyślnych ustawień
+\fancyhead[LE]{Aproksymacja Wielomianowa}
+\fancyhead[LO]{Artur Radwański - grupa 4} % Lewa strona nagłówka
+\fancyhead[R]{\thepage} % Prawa strona nagłówka
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{mojkolor}} % Styl pisma
+  {\thesection}                               % Numeracja
+  {1em}                                       % Odstęp
+  {}                                          % Tekst przed tytułem
+  [{\color{mojkolor}\titlerule[1.5pt]}]       % KRESKA PO TYTULE (bezpieczna metoda)
+
+% Dodatkowy odstęp pod kreską, żeby tekst nie "przyklejał" się do niej
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\Large
+\vspace*{1cm}
+\begin{Huge}
+ \textbf{Laboratorium Metod Obliczeniowych w Nauce i Technice - ćwiczenie 4a}
+\end{Huge}
+
+
+\vspace{0.5cm}
+Ćwiczenie 4b - Aproksymacja Trygonometryczna
+            
+ \vspace{1.5cm}
+
+\begin{LARGE}
+\textbf{Autor:}
+\end{LARGE}
+Artur Radwański
+
+
+
+\vfill
+            
+Kraków\\ Semestr letni 2026
+
+            
+\vspace{0.8cm}
+
+ \includegraphics[width=0.4\textwidth]{img/agh.png}
+            
+Wydział Informatyki\\
+Akademia Górniczo-Hutnicza\\
+
+
+\end{titlepage}
+
+\input{tabela_wynikow_fx.tex}
+\input{tabela_wynikow_fx.tex}
+\end{document}
