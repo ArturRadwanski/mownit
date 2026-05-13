@@ -1,0 +1,35 @@
+N     Max Error           RMS Error           
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+5     0.000179946         5.35717e-05         
+6     0.0675954           0.0164271           
+7     0.295676            0.0610255           
+8     0.872472            0.154595            
+9     16.3878             2.67915             
+10    7.75175             1.11472             
+11    22.9781             3.05207             
+12     Brak jednoznacznego rozwiazania.
+13     Brak jednoznacznego rozwiazania.
+14    15.2                1.65                
+15     Brak jednoznacznego rozwiazania.
+16     Brak jednoznacznego rozwiazania.
+17     Brak jednoznacznego rozwiazania.
+18     Brak jednoznacznego rozwiazania.
+19     Brak jednoznacznego rozwiazania.
+20    40                  3.28                
+30     Brak jednoznacznego rozwiazania.
+40     Brak jednoznacznego rozwiazania.
+50     Brak jednoznacznego rozwiazania.
+60     Brak jednoznacznego rozwiazania.
+70     Brak jednoznacznego rozwiazania.
+80     Brak jednoznacznego rozwiazania.
+90     Brak jednoznacznego rozwiazania.
+100    Brak jednoznacznego rozwiazania.
+200    Brak jednoznacznego rozwiazania.
+300    Brak jednoznacznego rozwiazania.
+400    Brak jednoznacznego rozwiazania.
+500    Brak jednoznacznego rozwiazania.
+600    Brak jednoznacznego rozwiazania.
+700    Brak jednoznacznego rozwiazania.
+800    Brak jednoznacznego rozwiazania.
+900    Brak jednoznacznego rozwiazania.
+1000   Brak jednoznacznego rozwiazania.
