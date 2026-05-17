@@ -1,0 +1,226 @@
+\documentclass[twoside]{article}
+
+\usepackage{graphicx}
+\usepackage[polish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[
+    a4paper,
+    inner=2.5cm,   
+    outer=2.5cm,   
+    top=2.5cm,     
+    bottom=2.5cm,  
+    footskip=1cm,  
+    headheight=15pt 
+]{geometry}
+\usepackage{float}
+
+
+
+
+\definecolor{mojkolor}{RGB}{45, 45, 100}
+
+\pagestyle{fancy}
+\fancyhf{} % Wyczyszczenie domyślnych ustawień
+\fancyhead[LE]{Układy równań liniowych - metody bezpośrednie}
+\fancyhead[LO]{Artur Radwański - grupa 4} % Lewa strona nagłówka
+\fancyhead[R]{\thepage} % Prawa strona nagłówka
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{mojkolor}} % Styl pisma
+  {\thesection}                               % Numeracja
+  {1em}                                       % Odstęp
+  {}                                          % Tekst przed tytułem
+  [{\color{mojkolor}\titlerule[1.5pt]}]       % KRESKA PO TYTULE (bezpieczna metoda)
+
+% Dodatkowy odstęp pod kreską, żeby tekst nie "przyklejał" się do niej
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\Large
+\vspace*{1cm}
+\begin{Huge}
+ \textbf{Laboratorium Metod Obliczeniowych w Nauce i Technice - ćwiczenie 6}
+\end{Huge}
+
+
+\vspace{0.5cm}
+Ćwiczenie 6 - Układy równań liniowych - metody bezpośrednie
+            
+ \vspace{1.5cm}
+
+\begin{LARGE}
+\textbf{Autor:}
+\end{LARGE}
+Artur Radwański
+
+
+
+\vfill
+            
+Kraków\\ Semestr letni 2026
+
+            
+\vspace{0.8cm}
+
+ \includegraphics[width=0.4\textwidth]{img/agh.png}
+            
+Wydział Informatyki\\
+Akademia Górniczo-Hutnicza\\
+
+
+\end{titlepage}
+
+\section{System}
+\begin{itemize}
+    \item Procesor: AMD Ryzen 7 9800x3d
+    \item System operacyjny: 6.19.9-arch1-1 (Linux)
+    \item Język programowania: c++23
+    \item Kompilator: gcc version 15.2.1 20260209 (GCC) 
+\end{itemize}
+
+\section{Ćwiczenie}
+Celem niniejszego zadania laboratoryjnego jest analiza numeryczna bezpośrednich metod rozwiązywania układów równań liniowych postaci:
+\begin{equation}
+    AX = B
+\end{equation}
+gdzie $A \in \mathbb{K}^{n \times n}$ jest macierzą współczynników, $B \in \mathbb{K}^n$ wektorem wyrazów wolnych, a $X \in \mathbb{K}^n$ wektorem poszukiwanych
+niewiadomych. W szczególności badany jest wpływ precyzji arytmetyki zmiennoprzecinkowej (flaot, double, long double) dla różnej oraz rozmiaru układu $n$ na stabilność i dokładność otrzymywanych wyników.
+
+\subsection{Metoda eliminacji Gaussa}
+Podstawową metodą badaną w sprawozdaniu jest metoda eliminacji Gaussa. Polega ona na przekształceniu macierzy $A$ do postaci górnotrójkątnej za pomocą operacji
+elementarnych na wierszach, co umożliwia wyznaczenie niewiadomych poprzez podstawianie wsteczne (\textit{back substitution}).
+
+\subsection{Algorytm Thomasa}
+Dla układów o macierzach trójdiagonalnych, zastosowano algorytm Thomasa. Jest to zoptymalizowany wariant eliminacji Gaussa o złożoności
+obliczeniowej $O(n)$ (w przeciwieństwie do $O(n^3)$ dla pełnej macierzy), który pozwala na znaczne oszczędności pamięciowe poprzez przechowywanie jedynie
+niezerowych diagonali macierzy.
+
+\subsection{Uwarunkowanie zadania}
+Istotnym aspektem sprawozdania jest analiza uwarunkowania macierzy $A$, mierzonego za pomocą wskaźnika uwarunkowania:
+\begin{equation}
+    \text{cond}(A) = \|A\|_{\infty} \cdot \|A^{-1}\|_{\infty}
+\end{equation}
+Przy czym $$\|A\|_\infty = \max_{1 \leq i\leq n} \sum_{j=1}^{n}|a_{i,j}| $$ dla macierzy kwadratowej.
+Wskaźnik ten definiuje, jak błędy danych wejściowych (w tym błędy reprezentacji liczb w pamięci komputera) wpływają na błąd rozwiązania.
+Macierze o wysokim współczynniku uwarunkowania nazywamy źle uwarunkowanymi, co w praktyce oznacza drastyczną degradację dokładności przy wzroście wymiaru układu.
+Do wyznaczenia tego wskaźnika użyto biblioteki egien3.
+
+\section{Opis badanych przypadków}
+
+W ramach eksperymentów przeanalizowano trzy typy macierzy o różnych strukturach i właściwościach numerycznych:
+
+\begin{itemize}
+    \item \textbf{Zadanie 1:} Macierz, w której pierwszy wiersz składa się z jedynek, a pozostałe elementy definiowane są przez relację $a_{i,j} = \frac{1}{i+j+1}$.
+    Struktura ta zbliża macierz do macierzy Hilberta, znanej z ekstremalnie złego uwarunkowania.
+    \item \textbf{Zadanie 2:} Macierz zdefiniowana warunkowo, gdzie $a_{i,j} = \frac{2j}{i}$ dla $i \le j$ oraz $a_{i,j} = a_{j,i}$ w pozostałych przypadkach.
+    Celem jest porównanie stabilności tego układu z układem z punktu pierwszego.
+    \item \textbf{Zadanie 3:} Macierz trójdiagonalna (struktura pasmowa), dla której przeprowadzono porównanie wydajnościowe eliminacji Gaussa oraz dedykowanego
+    algorytmu Thomasa pod kątem czasu wykonania. Elementy macierzy dane są wzorem $a_{i,i} -2 \cdot i - 4$, $a_{i, i+1} = i$, $a_{i, i-1} = \frac{4}{i}$.
+\end{itemize}
+
+Wektory wyrazów wolnych $B$ zostały wyznaczone na podstawie zadanych wektrów rozwiązań $X$ ($x_i = -1$ jeżeli $i \mod 3 = 0$ i $x_i = 1$ w przeciwnym razie), 
+co pozwala na precyzyjne wyznaczenie błędu bezwzględnego maksymalnego.
+
+
+\section{Wyniki}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|r|l|l|l|l|}
+\hline
+\textbf{n} & \textbf{Wskaźnik uwarunkowania} & \textbf{Max Error (float)} & \textbf{Max Error (double)} & \textbf{Max Error (long)} \\ \hline
+5   & 1.344000e+05 & 0.000179946 & 4.58966e-13 & 1.223793e-15 \\ \hline
+6   & 3.969000e+06 & 0.0675954   & 1.03355e-10 & 1.712557e-14 \\ \hline
+7   & 1.152598e+08 & 0.295676    & 2.18122e-10 & 8.462393e-14 \\ \hline
+8   & 3.541618e+09 & 0.872472    & 4.85542e-08 & 1.829000e-11 \\ \hline
+9   & 1.060518e+11 & 16.3878     & 2.73259e-08 & 3.309861e-10 \\ \hline
+10  & 3.363975e+12 & 7.75175     & 0.000110337 & 4.387480e-09 \\ \hline
+11  & 1.029378e+14 & 22.9781     & 0.00555431  & 5.424127e-07 \\ \hline
+12  & 3.252897e+15 & Brak rozw.  & 0.220058    & 1.620328e-05 \\ \hline
+13  & 1.034974e+17 & Brak rozw.  & 5.05323     & 5.159916e-04 \\ \hline
+14  & 3.159054e+18 & 15.2        & 2.7003      & 0.0128055 \\ \hline
+15  & 5.283280e+19 & Brak rozw.  & 4.22136     & 0.4002059 \\ \hline
+20  & 1.472402e+20 & 40.0        & 55.8194     & 3.097086 \\ \hline
+\end{tabular}
+
+\caption{Porównanie błędu maksymalnego dla różnych typów danych oraz wskaźnika uwarunkowania macierzy w zależności od rozmiaru $n$}
+\label{tab:bledy_n}
+\end{table}
+
+
+Analiza wyników tabeli \ref{tab:bledy_n}
+\begin{itemize}
+    \item \textbf{Wskaźnik uwarunkowania}: Wykładniczy wzrost Cond. Index (z $10^5$ do $10^{21}$) potwierdza, że macierz staje się ekstremalnie źle 
+    uwarunkowana wraz ze wzrostem $n$.
+    \item \textbf{Precyzja float}: Traci wiarygodność najszybciej. Już dla $n=6$ błąd jest rzędu $10^{-2}$, a powyżej $n=11$ system zazwyczaj
+    nie znajduje jednoznacznego rozwiązania.
+    \item \textbf{Precyzja double}: Pozwala na relatywnie dokładne obliczenia do ok. $n=10$.
+    \item \textbf{Precyzja long double}: Jest najbardziej odporna. Mimo ogromnego uwarunkowania, znajduje oć błąd maksymalny dla $n > 13$ jest znaczący.  
+
+\end{itemize}
+      
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|r||l|l|l|l|}
+\hline
+\textbf{n} & \textbf{Cond. Index} & \textbf{Max Error (float)} & \textbf{Max Error (double)} & \textbf{Max Error (long)} \\ \hline
+5  & 4.063492 & 2.38419e-07 & 9.99201e-16 & 2.168404e-19  \\ \hline \hline
+6  & 5.050505 & 1.78814e-07 & 1.22125e-15 & 5.421011e-19  \\ \hline
+7  & 6.041958 & 1.25170e-06 & 1.66533e-15 & 8.131516e-19 \\ \hline
+8  & 7.035897 & 6.55651e-07 & 1.88738e-15 & 4.336809e-19  \\ \hline
+9  & 8.031373 & 3.15905e-06 & 4.55191e-15 & 9.757820e-19  \\ \hline
+10 & 9.027864 & 1.07288e-06 & 6.32827e-15 & 9.757820e-19  \\ \hline
+11 & 10.02506 & 1.78814e-06 & 9.43690e-15 & 8.673617e-19  \\ \hline
+12 & 11.02277 & 2.86102e-06 & 1.18794e-14 & 1.301043e-18  \\ \hline
+13 & 12.02087 & 3.57628e-06 & 1.04361e-14 & 1.517883e-18  \\ \hline
+14 & 13.01926 & 2.62260e-06 & 9.10383e-15 & 3.252607e-18  \\ \hline
+15 & 14.01788 & 3.45707e-06 & 1.27676e-14 & 2.927346e-18  \\ \hline
+20 & 19.01317 & 1.45435e-05 & 2.14273e-14 & 5.854692e-18  \\ \hline
+\end{tabular}
+\caption{Szczegółowe zestawienie błędu maksymalnego i uwarunkowania dla Zadania 2 ($n=5$ do $20$)}
+\label{tab:bledy_zad2_full}
+\end{table}
+
+Porównanie wyników tabeli \ref{tab:bledy_zad2_full} z \ref{tab:bledy_n}
+\begin{itemize}
+    \item \textbf{Uwarunkowanie macierzy}: W zadaniu 2 wskaźnik uwarunkowania rośnie liniowo wraz z $n$. Świadczy to o znacznie lepszym
+    uwarunkowaniu macierzy w zadaniu 2, co przekłada się na znacząco mniejszy błąd dla każdej precyzji artemtyki zmiennoprzecinkowej.
+    \item \textbf{Stabilność rozwiązania}: Dzięki niskiemu współczynnikowi uwarunkowania, nawet dla $n=20$, metoda eliminacji Gaussa zachowuje wysoką precyzję.
+
+\end{itemize}
+
+
+\begin{table}
+\centering
+\begin{tabular}{|r||l|l|l|l|l|l|}
+\hline
+\textbf{n} & \textbf{Thomas, float} & \textbf{Gauss, float} & \textbf{Thomas, double} & \textbf{Gauss, double} & \textbf{Thomas, long} & \textbf{Gauss, long} \\
+\hline \hline
+10 & 2.6e-07 & 4.158e-06 & 2.8e-07 & 2.574e-06 & 4.21e-07 & 4.639000e-06 \\ \hline
+20 & 4.41e-07 & 1.9467e-05 & 4.71e-07 & 1.7994e-05 & 7.91e-07 & 3.303200e-05 \\ \hline
+30 & 6.31e-07 & 6.0925e-05 & 6.81e-07 & 6.0424e-05 & 1.183e-06 & 1.116000e-04 \\ \hline
+40 & 8.22e-07 & 0.000489074 & 8.71e-07 & 0.000135245 & 1.543e-06 & 2.430790e-04 \\ \hline
+50 & 9.92e-07 & 0.000276092 & 1.062e-06 & 0.000256214 & 1.944e-06 & 4.640270e-04 \\ \hline
+100 & 1.934e-06 & 0.00235982 & 2.034e-06 & 0.00192848 & 3.827e-06 & 3.589533e-03 \\ \hline
+200 & 3.798e-06 & 0.0157718 & 4.067e-06 & 0.0149373 & 7.575e-06 & 0.0281962 \\ \hline
+300 & 5.721e-06 & 0.0508052 & 5.982e-06 & 0.0498628 & 1.1341e-05 & 0.09454183 \\ \hline
+400 & 7.645e-06 & 0.119581 & 7.955e-06 & 0.11745 & 1.5029e-05 & 0.2246108 \\ \hline
+500 & 9.348e-06 & 0.233498 & 9.969e-06 & 0.228681 & 1.8816e-05 & 0.4359427 \\ \hline
+600 & 1.1241e-05 & 0.400955 & 1.1883e-05 & 0.394226 & 3.3514e-05 & 0.7548514 \\ \hline
+700 & 1.3135e-05 & 0.633374 & 1.3837e-05 & 0.624198 & 2.631e-05 & 1.195860 \\ \hline
+800 & 1.4928e-05 & 0.944794 & 1.574e-05 & 0.930117 &  2.9998e-05 & 1.781927 \\ \hline
+900 & 1.6722e-05 & 1.34302 & 1.7704e-05 & 1.32729 & 3.5768e-05 & 2.537083 \\ \hline
+1000 & 1.8566e-05 & 1.84036 & 1.9658e-05 & 1.81218 & 3.7642e-05 & 3.476095 \\ \hline
+\end{tabular}
+\end{table}
+
+  
+\end{document}

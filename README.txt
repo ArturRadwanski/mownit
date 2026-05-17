@@ -1,0 +1,1 @@
+Przesyłam plik cmake oraz   wygenerowane prez niego komendy do kompilacji programu
