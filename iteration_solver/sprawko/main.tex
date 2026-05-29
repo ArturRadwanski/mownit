@@ -1,0 +1,226 @@
+\documentclass[twoside]{article}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[polish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[
+    a4paper,
+    inner=2.5cm,   
+    outer=2.5cm,   
+    top=2.5cm,     
+    bottom=2.5cm,  
+    footskip=1cm,  
+    headheight=15pt 
+]{geometry}
+\usepackage{float}
+
+\definecolor{mojkolor}{RGB}{45, 45, 100}
+
+\pagestyle{fancy}
+\fancyhf{} 
+\fancyhead[LE]{Rozwiązywanie Układów Równań Liniowych}
+\fancyhead[LO]{Artur Radwański - grupa 4} 
+\fancyhead[R]{\thepage} 
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{mojkolor}} 
+  {\thesection}                               
+  {1em}                                       
+  {}                                          
+  [{\color{mojkolor}\titlerule[1.5pt]}]       
+
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+\begin{document}
+
+% --- STRONA TYTUŁOWA ---
+\begin{titlepage}
+\centering
+\Large
+\vspace*{1cm}
+\begin{Huge}
+ \textbf{Laboratorium Metod Obliczeniowych w Nauce i Technice - ćwiczenie 5}
+\end{Huge}
+
+\vspace{0.5cm}
+Iteracyjne metody rozwiązywania układów równań liniowych. Metoda Jacobiego.
+            
+ \vspace{1.5cm}
+
+\begin{LARGE}
+\textbf{Autor:}
+\end{LARGE}\\
+Artur Radwański
+
+\vfill
+            
+Kraków\\ Semestr letni 2026
+            
+\vspace{0.8cm}
+\includegraphics[width=0.4\textwidth]{img/agh.png}
+\vspace{0.5cm}
+
+Wydział Informatyki\\
+Akademia Górniczo-Hutnicza\\
+\end{titlepage}
+
+\section{System}
+\begin{itemize}
+    \item Procesor: Intel(R) Core(TM) i5-7200U
+    \item System operacyjny: 6.19.9-arch1-1 (Linux)
+    \item Język programowania: c++20
+    \item Kompilator: gcc version 16.1.1 20260430 
+    \item prezycja obliczeń: binary64
+\end{itemize}
+
+\section{Wstęp teoretyczny i opis metody}
+
+Celem zadania było zaimplementowanie oraz analiza numeryczna stacjonarnej metody iteracyjnej Jacobiego służącej do rozwiązywania
+układu równań liniowych postaci $Ax = b$, gdzie $A \in \mathbb{R}^{n \times n}$.
+\begin{equation}
+\large
+A_{ij} = 
+\begin{cases} 
+9 & \text{dla } i = j \\
+-\frac{1}{j} & \text{dla } j > i \\
+\frac{1}{i} & \text{dla } i > j
+\end{cases}
+\end{equation}
+Przy czym w implementacji uwzględniono indeksowanie od 1 do $n$. Wektor $b$ wyznaczano bezpośrednio jako iloczyn $b = A x_{\text{ref}}$, gdzie
+wektor referencyjny
+$x_{\text{ref}}$ stanowił losową permutację elementów ze zbioru $\{-1, 1\}$.
+
+Testowane rozmiary macierzy: 
+
+\begin{equation}
+\large
+n \in \{10,50,100,400,500\}
+\end{equation} 
+
+Testowana precyzja dla kryterium stopu: 
+
+\begin{equation}
+    \large
+    \epsilon \in \{1e-04, 1e-08, 1e-12, 1e-16\}
+\end{equation}
+
+
+\subsection{Kryteria stopu algorytmu}
+Badaniu poddano dwa alternatywne kryteria zakończenia procesu iteracyjnego przy zadanej tolerancji $\epsilon$:
+\begin{enumerate}
+    \item \textbf{Kryterium przyrostowe:} $\|x^{(k+1)} - x^{(k)}\|_2 < \epsilon$
+    \item \textbf{Kryterium resydualne:} $\|A x^{(k+1)} - b\|_2 < \epsilon$
+\end{enumerate}
+Dokładność końcową rozwiązania zweryfikowano poprzez porównanie obliczonego wektora $x$ z wektorem referencyjnym za pomocą maksymalnego błędu bezwzględnego 
+$\max(x - x_{\text{ref}})$.
+
+\subsection{Wyznaczanie promienia spektralnego}
+Zbieżność metody Jacobiego zależy bezpośrednio od promienia spektralnego macierzy iteracji $M_J = -D^{-1}(L+U)$, gdzie $A = D + L + U$ (odpowiednio macierz
+diagonalna, dolnotrójkątna i górnotrójkątna). Promień spektralny definiuje się jako:
+\begin{equation}
+\rho(M_J) = \max_{i} |\lambda_i|
+\end{equation}
+gdzie $\lambda_i$ są wartościami własnymi macierzy $M_J$. Wartości własne zostały wyznaczone przy użyciu biblioteki \texttt{Eigen} i jej klasy
+\texttt{Eigen::EigenSolver}, realizującej algorytm QR. Warunkiem koniecznym i dostatecznym zbieżności metody dla dowolnego przybliżenia początkowego
+jest $\rho(M_J) < 1$.
+
+\newpage
+
+% --- SEKCJA 2: WYNIKI ---
+\section{Wyniki}
+
+Poniższa tabela przedstawia zbiorcze wyniki pomiarów liczby iteracji, czasu wykonania (w milisekundach) oraz błędu końcowego w zależności od
+rozmiaru układu $n$, tolerancji $\epsilon$ oraz wektora startowego $x_0$.
+
+\begin{table}[H]
+\centering
+\caption{Wyniki działania metody Jacobiego dla różnych parametrów układu}
+\vspace{2mm}
+\footnotesize
+\begin{tabular}{c c c c r c c r c c}
+\toprule
+& & & & \multicolumn{3}{c}{\textbf{Kryterium Przyrostowe}} & \multicolumn{3}{c}{\textbf{Kryterium Resydualne}} \\
+\cmidrule(lr){5-7} \cmidrule(lr){8-10}
+$N$ & $\epsilon$ & $X_0$ & $\rho(M_J)$ & Iter. & Czas [ms] / Iter. & Błąd & Iter. & Czas [ms] / Iter. & Błąd \\
+\midrule
+10 & 1e-04 & Zera & 0.11858 & 6 & 0.005 & 4.544e-06 & 6 & 0.007 & 4.544e-06 \\
+10 & 1e-04 & Stałe(100) & 0.11858 & 8 & 0.005 & 9.350e-06 & 8 & 0.007 & 9.350e-06 \\
+10 & 1e-08 & Zera & 0.11858 & 10 & 0.005 & 8.984e-10 & 10 & 0.007 & 8.984e-10 \\
+10 & 1e-08 & Stałe(100) & 0.11858 & 13 & 0.003 & 2.192e-10 & 13 & 0.005 & 2.192e-10 \\
+10 & 1e-12 & Zera & 0.11858 & 15 & 0.004 & 2.130e-14 & 15 & 0.005 & 2.130e-14 \\
+10 & 1e-12 & Stałe(100) & 0.11858 & 17 & 0.004 & 4.322e-14 & 17 & 0.008 & 4.322e-14 \\
+10 & 1e-16 & Zera & 0.11858 & 19 & 0.004 & 0.000e+00 & 18 & 0.008 & 0.000e+00 \\
+10 & 1e-16 & Stałe(100) & 0.11858 & 21 & 0.004 & 0.000e+00 & 20 & 0.007 & 0.000e+00 \\
+\midrule
+50 & 1e-04 & Zera & 0.15198 & 6 & 0.037 & 1.261e-05 & 7 & 0.063 & 1.914e-06 \\
+50 & 1e-04 & Stałe(100) & 0.15198 & 10 & 0.038 & 2.921e-06 & 10 & 0.092 & 2.921e-06 \\
+50 & 1e-08 & Zera & 0.15198 & 11 & 0.034 & 1.021e-09 & 11 & 0.064 & 1.021e-09 \\
+50 & 1e-08 & Stałe(100) & 0.15198 & 15 & 0.036 & 2.369e-10 & 15 & 0.074 & 2.369e-10 \\
+50 & 1e-12 & Zera & 0.15198 & 16 & 0.034 & 8.221e-14 & 16 & 0.063 & 8.221e-14 \\
+50 & 1e-12 & Stałe(100) & 0.15198 & 19 & 0.042 & 1.268e-13 & 20 & 0.083 & 2.037e-14 \\
+50 & 1e-16 & Zera & 0.15198 & 21 & 0.035 & 2.220e-16 & 20 & 0.063 & 2.220e-16 \\
+50 & 1e-16 & Stałe(100) & 0.15198 & 24 & 0.041 & 2.220e-16 & 23 & 0.068 & 2.220e-16 \\
+\midrule
+100 & 1e-04 & Zera & 0.16176 & 7 & 0.127 & 5.033e-06 & 7 & 0.242 & 5.033e-06 \\
+100 & 1e-04 & Stałe(100) & 0.16176 & 10 & 0.125 & 7.122e-06 & 10 & 0.241 & 7.122e-06 \\
+100 & 1e-08 & Zera & 0.16176 & 12 & 0.126 & 5.573e-10 & 12 & 0.246 & 5.573e-10 \\
+100 & 1e-08 & Stałe(100) & 0.16176 & 15 & 0.127 & 7.889e-10 & 15 & 0.248 & 7.889e-10 \\
+100 & 1e-12 & Zera & 0.16176 & 17 & 0.130 & 5.898e-14 & 17 & 0.244 & 5.898e-14 \\
+100 & 1e-12 & Stałe(100) & 0.16176 & 20 & 0.130 & 8.380e-14 & 20 & 0.246 & 8.380e-14 \\
+100 & 1e-16 & Zera & 0.16176 & 23 & 0.128 & 3.846e-16 & 22 & 0.261 & 3.846e-16 \\
+100 & 1e-16 & Stałe(100) & 0.16176 & 26 & 0.129 & 4.441e-16 & 25 & 0.247 & 4.441e-16 \\
+\midrule
+400 & 1e-04 & Zera & 0.17625 & 7 & 2.053 & 9.658e-06 & 7 & 4.015 & 9.658e-06 \\
+400 & 1e-04 & Stałe(100) & 0.17625 & 11 & 2.216 & 5.056e-06 & 11 & 4.486 & 5.056e-06 \\
+400 & 1e-08 & Zera & 0.17625 & 12 & 2.017 & 1.641e-09 & 13 & 4.064 & 2.891e-10 \\
+400 & 1e-08 & Stałe(100) & 0.17625 & 16 & 2.138 & 8.599e-10 & 16 & 4.277 & 8.599e-10 \\
+400 & 1e-12 & Zera & 0.17625 & 18 & 2.067 & 4.886e-14 & 18 & 4.033 & 4.866e-14 \\
+400 & 1e-12 & Stałe(100) & 0.17625 & 21 & 1.985 & 1.461e-13 & 22 & 3.976 & 2.692e-14 \\
+400 & 1e-16 & Zera & 0.17625 & 10001* & 2.026 & 3.846e-16 & 10001* & 3.971 & 3.846e-16 \\
+400 & 1e-16 & Stałe(100) & 0.17625 & 10001* & 1.978 & 3.846e-16 & 10001* & 3.933 & 3.846e-16 \\
+\midrule
+500 & 1e-04 & Zera & 0.17810 & 7 & 3.069 & 1.142e-05 & 8 & 6.225 & 2.033e-06 \\
+500 & 1e-04 & Stałe(100) & 0.17810 & 11 & 3.083 & 6.188e-06 & 11 & 6.082 & 6.188e-06 \\
+500 & 1e-08 & Zera & 0.17810 & 13 & 3.434 & 3.64e-10 & 13 & 6.386 & 3.640e-10 \\
+500 & 1e-08 & Stałe(100) & 0.17810 & 16 & 3.068 & 1.109e-09 & 17 & 6.193 & 1.975e-10 \\
+500 & 1e-12 & Zera & 0.17810 & 18 & 3.077 & 6.554e-14 & 18 & 6.201 & 6.554e-14 \\
+500 & 1e-12 & Stałe(100) & 0.17810 & 22 & 3.101 & 3.331e-14 & 22 & 6.146 & 3.331e-14 \\
+500 & 1e-16 & Zera & 0.17810 & 10001* & 3.087 & 4.441e-16 & 10001* & 6.237 & 4.441e-16 \\
+500 & 1e-16 & Stałe(100) & 0.17810 & 10001* & 3.087 & 4.441e-16 & 10001* & 6.161 & 4.441e-16 \\
+\bottomrule
+\end{tabular}
+\caption{Iter. = iteracja}
+\label{tab:wyniki}
+\flushleft{\scriptsize * Oznacza osiągnięcie limitu \texttt{maxIteracji} bez formalnego spełnienia warunku maszynowego kryterium stopu przy skrajnej tolerancji.}
+\end{table}
+
+% --- SEKCJA 3: WNIOSKI ---
+\section{Wnioski}
+
+Na podstawie wyników badań przedstawionych w tabeli \ref{tab:wyniki} sformułowano następujące spostrzeżenia:
+\begin{itemize}
+    \item \textbf{Zbieżność metody:} Dla każdego badanego rozmiaru $N$ (od 10 do 500) promień spektralny macierzy iteracji przyjmuje wartości znacząco mniejsze
+    od jedynki ($\rho(M_J) \in [0.118, 0.178]$). Gwarantuje to zbieżność metody Jacobiego niezależnie od przybliżenia początkowego.
+    
+    \item \textbf{Efektywność kryteriów stopu:} Kryterium przyrostowe wykazuje się \textbf{znaczną przewagą czasową} nad kryterium resydualnym. Wynika to z faktu,
+    że sprawdzenie przyrostu wymaga operacji o złożoności $\mathcal{O}(n)$, natomiast obliczenie wektora residuum wymusza wykonanie pełnego
+    mnożenia macierzowo-wektorowego $A \cdot x^{(k+1)}$ o złożoności $\mathcal{O}(n^2)$ na każdym kroku. Dla układu $N=500$, czas wykonania jednej iteeracji
+    dla kryterium resydualnego jest ponad dwukrotnie dłuższy.
+    
+    \item \textbf{Wpływ wektora początkowego $X_0$:} Wybór odległego punktu startowego ($X_0 = \text{Stałe}(10)$) wydłuża proces obliczeniowy średnio jedynie
+    o 2 do 4 iteracji w stosunku do wektora zerowego. Świadczy to o szybkiej zbieżności metody.
+    
+    \item \textbf{Ograniczenia sprzętowe dla $\epsilon = 10^{-16}$:} Dla dużych wymiarów macierzy ($N \ge 400$) i oczekiwanej precyzji rzędu błędu
+    maszynowego podwójnej precyzji (\texttt{double}), algorytm nie przerywa pracy automatycznie i dochodzi do limitu 10000 iteracji.
+    Jednakże kolumna błędu bezwzględnego jasno dowodzi, że wektor osiągnął już maksymalną możliwą dokładność ($3.84 \cdot 10^{-16}$).
+    Dalsze iteracje wynikają z oscylacji numerycznych (fluktuacje bitów cechy) poniżej progu dokładności maszynowej $\epsilon_{\text{mach}}$.
+\end{itemize}
+
+\end{document}
